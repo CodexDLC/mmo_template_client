@@ -1,0 +1,30 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="mmo_frontand_client"
+run/main_scene="res://ui/main/Main.tscn"
+config/features=PackedStringArray("4.4", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+Config="*res://autoload/Config.gd"
+Log="*res://autoload/core/Log.gd"
+EventBus="*res://autoload/core/EventBus.gd"
+Session="*res://autoload/core/Session.gd"
+RequestLedger="*res://autoload/RequestLedger.gd"
+HttpAuth="*res://autoload/network/HttpAuth.gd"
+NetWS="*res://autoload/network/NetWS.gd"
+
+[editor_plugins]
+
+enabled=PackedStringArray()

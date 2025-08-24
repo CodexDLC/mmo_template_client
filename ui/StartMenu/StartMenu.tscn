@@ -1,0 +1,50 @@
+[gd_scene load_steps=2 format=3 uid="uid://djiuygcv2gw3h"]
+
+[ext_resource type="Script" uid="uid://dy8r1i0wyd7cg" path="res://ui/StartMenu/start_menu.gd" id="1_bx376"]
+
+[node name="StartMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bx376")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = -7.0
+offset_top = -6.0
+offset_right = 1145.0
+offset_bottom = 638.0
+color = Color(0.653472, 0.395574, 0.171925, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 283.0
+offset_top = 149.0
+offset_right = 678.0
+offset_bottom = 312.0
+
+[node name="UsernameInput" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+text = "Username"
+
+[node name="PasswordInput" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+text = "Password"
+secret = true
+
+[node name="LoginButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "LoginButton"
+
+[node name="DebugButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "DebugButton"
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Status: Offline"
+
+[node name="ErrorDialog" type="AcceptDialog" parent="VBoxContainer"]

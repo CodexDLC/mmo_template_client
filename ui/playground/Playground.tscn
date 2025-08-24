@@ -1,0 +1,90 @@
+[gd_scene load_steps=2 format=3 uid="uid://dakfp3ii8s3q6"]
+
+[ext_resource type="Script" uid="uid://cyfl45tat8s7e" path="res://ui/playground/playground.gd" id="1_hpj3u"]
+
+[node name="Playground" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hpj3u")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 1149.0
+offset_bottom = 648.0
+color = Color(0.656466, 0.485821, 0.242281, 1)
+
+[node name="StatusBar" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 3.0
+offset_right = 1151.0
+offset_bottom = 648.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="StatusBar"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="StatusBar/HBoxContainer"]
+layout_mode = 2
+text = "Status: Authenticated"
+
+[node name="CountersLabel" type="Label" parent="StatusBar/HBoxContainer"]
+layout_mode = 2
+text = "In-flight: 0 | RTT: N/A"
+
+[node name="HSplitContainer" type="HSplitContainer" parent="StatusBar"]
+layout_mode = 2
+focus_neighbor_top = NodePath("../HBoxContainer")
+focus_neighbor_bottom = NodePath(".")
+
+[node name="left panel" type="VBoxContainer" parent="StatusBar/HSplitContainer"]
+layout_mode = 2
+
+[node name="RawJSONCommand" type="Label" parent="StatusBar/HSplitContainer/left panel"]
+layout_mode = 2
+text = "Raw JSON Command:"
+
+[node name="JsonInput" type="TextEdit" parent="StatusBar/HSplitContainer/left panel"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="StatusBar/HSplitContainer/left panel"]
+layout_mode = 2
+
+[node name="SendButton" type="Button" parent="StatusBar/HSplitContainer/left panel/HBoxContainer"]
+layout_mode = 2
+text = "Send (Ctrl+Enter)"
+
+[node name="ReconnectButton" type="Button" parent="StatusBar/HSplitContainer/left panel/HBoxContainer"]
+layout_mode = 2
+text = "Reconnect (F5)"
+
+[node name="ClearButton" type="Button" parent="StatusBar/HSplitContainer/left panel/HBoxContainer"]
+layout_mode = 2
+text = "Clear Log"
+
+[node name="ExportButton" type="Button" parent="StatusBar/HSplitContainer/left panel/HBoxContainer"]
+layout_mode = 2
+text = "Export Log (Ctrl+L)"
+
+[node name="PresetsTab" type="TabContainer" parent="StatusBar/HSplitContainer/left panel"]
+layout_mode = 2
+current_tab = 0
+
+[node name="Presets" type="VBoxContainer" parent="StatusBar/HSplitContainer/left panel/PresetsTab"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Preset1Button" type="Button" parent="StatusBar/HSplitContainer/left panel/PresetsTab/Presets"]
+layout_mode = 2
+text = "Ping Command"
+
+[node name="Preset2Button" type="Button" parent="StatusBar/HSplitContainer/left panel/PresetsTab/Presets"]
+layout_mode = 2
+text = "..."
+
+[node name="EventLog" type="RichTextLabel" parent="StatusBar/HSplitContainer"]
+layout_mode = 2
+bbcode_enabled = true

@@ -1,0 +1,10 @@
+{
+  "ws_url": "ws://127.0.0.1:8000/v1/connect",
+  "http_url": "http://127.0.0.1:8000/v1",
+  "send_timeout_ms": 5000,
+  "hello_timeout_ms": 5000,
+  "backoff_base_ms": 500,
+  "backoff_max_ms": 15000,
+  "ledger_cap": 256,
+  "log_verbose": true
+}
