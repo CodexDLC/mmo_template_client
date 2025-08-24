@@ -1,13 +1,15 @@
 {
-  "ws_url": "ws://127.0.0.1:8000/v1/connect",
-  "http_url": "http://127.0.0.1:8000/v1",
+  "network": {
+	"host": "127.0.0.1",
+	"http_port": 8000,
+	"ws_port": 8000
+  },
   "send_timeout_ms": 5000,
   "hello_timeout_ms": 5000,
   "backoff_base_ms": 500,
   "backoff_max_ms": 15000,
   "ledger_cap": 256,
   "log_verbose": true,
-  
   "ui": {
 	"start_scene": "res://ui/session/start/Start.tscn",
 	"register_scene": "res://ui/session/register/Register.tscn",
@@ -15,6 +17,4 @@
 	"playground_scene": "res://ui/session/playground/Playground.tscn",
 	"use_groups": true
   }
-  
 }
-

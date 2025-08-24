@@ -126,17 +126,29 @@ func _on_http_login_completed(ok: bool, data_or_err) -> void:
 	if not screen or screen.scene_file_path != _start_scene_path:
 		return
 
-	# Если аутентификация прошла успешно...
 	if ok:
-		# --- ИСПРАВЛЕНИЕ ЗДЕСЬ ---
-		Log.info("HTTP login successful! Now connecting to WebSocket...") 
+		Log.info("HTTP login successful! Now connecting to WebSocket...")
 		screen.set_status(tr("Connecting..."))
 		NetWS.connect_to_server()
 	else:
 		Log.error("HTTP login failed: " + str(data_or_err))
-		# Показываем ошибку и снова делаем интерфейс активным.
-		screen.show_error(str(data_or_err))
+		
+		# --- ИСПРАВЛЕНИЕ: ПАРСИНГ ОШИБКИ ОТ СЕРВЕРА ---
+		var error_message_text = "Login failed. Please try again." # Сообщение по умолчанию
+		var parsed_error = JSON.parse_string(str(data_or_err))
+		
+		# Проверяем, что ответ является словарем и содержит поле "detail"
+		if parsed_error is Dictionary and parsed_error.has("detail"):
+			error_message_text = parsed_error.detail
+		elif parsed_error is Array and parsed_error.size() > 0:
+			# Если это массив ошибок (как в вашем случае)
+			var first_error = parsed_error[0]
+			if first_error is Dictionary and first_error.has("msg"):
+				error_message_text = first_error.msg
+		
+		screen.show_error(error_message_text)
 		screen.set_busy(false)
+		# --- КОНЕЦ ИСПРАВЛЕНИЯ ---
 
 func _on_http_register_completed(ok: bool, data_or_err) -> void:
 	var screen = _current_screen as Control

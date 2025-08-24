@@ -65,7 +65,9 @@ func _attempt_connection() -> void:
 
 	EventBus.net_disconnected.emit("Connecting...")
 
-	var url: String = Config.get_value("ws_url")
+	# ИСПРАВЛЕНИЕ: Формируем URL из полей хоста и порта, явно приводя порт к int
+	var network_config = Config.get_value("network")
+	var url: String = "ws://" + network_config.host + ":" + str(int(network_config.ws_port)) + "/v1/connect"
 
 	# ВАЖНО: в Godot 4 заголовки через handshake_headers (а НЕ custom_headers)
 	_ws_peer.handshake_headers = PackedStringArray([
@@ -89,6 +91,7 @@ func _attempt_connection() -> void:
 
 	_hello_timer.start(float(Config.get_value("hello_timeout_ms", 5000)) / 1000.0)
 
+
 func send_command(domain: String, command: String, payload: Dictionary, idempotent: bool = false) -> String:
 	var request_id := "req_" + UUID.new_uuid_string()
 	
@@ -111,6 +114,7 @@ func send_command(domain: String, command: String, payload: Dictionary, idempote
 	return request_id
 
 func _process_message(msg_str: String) -> void:
+	Log.info("Received message from server: " + msg_str)
 	var data = JSON.parse_string(msg_str)
 	if data == null:
 		Log.error("Failed to parse server message: " + msg_str)
@@ -192,3 +196,21 @@ func _resend_idempotent_queue():
 	for frame in temp_queue:
 		RequestLedger.register(frame["request_id"], Config.get_value("send_timeout_ms", 5000))
 		_ws_peer.send_text(JSON.stringify(frame))
+		
+func send_raw_frame(frame: Dictionary, idempotent: bool = false) -> String:
+	var request_id := "req_" + UUID.new_uuid_string()
+	if not frame.has("request_id"):
+		frame["request_id"] = request_id
+	
+	if _current_state != State.AUTHENTICATED:
+		if idempotent:
+			_idempotent_queue.push_back(frame)
+			Log.warn("Not connected. Queued idempotent frame: " + str(frame.get("type", "unknown")))
+		else:
+			Log.error("Cannot send non-idempotent frame while offline: " + str(frame.get("type", "unknown")))
+			EventBus.net_error.emit("client.offline", {"message": "Cannot send frame"})
+		return ""
+
+	RequestLedger.register(request_id, Config.get_value("send_timeout_ms", 5000))
+	_ws_peer.send_text(JSON.stringify(frame))
+	return request_id

@@ -4,8 +4,6 @@ extends Control
 
 ## --- СИГНАЛЫ (Контракт: Сцена -> Main) ---
 # Эти сигналы сообщают Main.gd о намерениях пользователя.
-
-# Запрос на отправку команды, указанной в поле JSON.
 signal request_send_command(data: Dictionary)
 # Запрос на переподключение к WebSocket.
 signal request_reconnect
@@ -27,9 +25,11 @@ signal request_export_logs
 
 # _ready() вызывается один раз при создании узла.
 func _ready() -> void:
-	# Проверяем, что все элементы интерфейса на месте.
+	# Добавляем лог о готовности скрипта
+	Log.info("Playground.gd is ready.")
+
 	if not _validate_scene_contract():
-		set_process(false) # Отключаем сцену, если что-то пошло не так.
+		set_process(false)
 		return
 	
 	# Подключаем сигналы от кнопок к нашим функциям.
@@ -47,20 +47,16 @@ func _ready() -> void:
 	send_shortcut.events = [send_event]
 	send_button.shortcut = send_shortcut
 	
-	# Заполняем поле ввода JSON значением по умолчанию при открытии экрана.
 	_on_preset1_pressed()
 
 ## --- ПУБЛИЧНЫЕ МЕТОДЫ (Контракт: Main -> Сцена) ---
 # Эти функции будет вызывать Main.gd, чтобы управлять этим экраном.
-
 func set_status(text: String) -> void:
 	status_label.text = text
 
-# Обновляет счетчик запросов в полете.
 func set_counters(in_flight_requests: int) -> void:
 	counters_label.text = "In-flight: %d" % in_flight_requests
 	
-# Добавляет новое сообщение в лог на экране.
 func log_message(message: String) -> void:
 	var timestamp = Time.get_datetime_string_from_system()
 	event_log.append_text("[%s] %s\n" % [timestamp, message])
@@ -68,41 +64,45 @@ func log_message(message: String) -> void:
 func set_busy(is_busy: bool) -> void:
 	send_button.disabled = is_busy
 
-# Управляет состоянием кнопок в зависимости от статуса аутентификации.
 func set_auth_state(is_authenticated: bool) -> void:
 	send_button.disabled = not is_authenticated
 	reconnect_button.disabled = not is_authenticated
 
 func show_error(text: String) -> void:
-	# Ошибки просто выводим в наш же лог красным цветом.
 	log_message("[color=red]ERROR: %s[/color]" % text)
 
 ## --- ВНУТРЕННИЕ ФУНКЦИИ ---
 
 # Вызывается при нажатии кнопки "Send".
 func _on_send_pressed() -> void:
+	Log.info("Send button pressed.")
 	var text = json_input.text
-	var data = JSON.parse_string(text) # Пытаемся распарсить JSON
+	var data = JSON.parse_string(text)
 	
-	# Проверки на корректность введенных данных.
 	if data == null:
 		show_error(tr("Invalid JSON"))
-		return
-	if not data is Dictionary or not data.has("domain") or not data.has("command"):
-		show_error(tr("JSON must be a dictionary with 'domain' and 'command' keys."))
+		Log.error("Attempt to send invalid JSON.")
 		return
 		
-	# Если все хорошо, испускаем сигнал наверх.
+	var is_command_frame = data is Dictionary and data.has("domain") and data.has("command")
+	var is_special_frame = data is Dictionary and data.has("type")
+	
+	if not (is_command_frame or is_special_frame):
+		show_error(tr("JSON must be a dictionary with 'domain' and 'command' keys, or a 'type' key."))
+		Log.error("JSON validation failed.")
+		return
+	
+	Log.info("Sending command: " + str(data))
 	request_send_command.emit(data)
 
 # Заполняет поле ввода "ping" командой.
 func _on_preset1_pressed() -> void:
+	Log.info("Ping Command preset loaded.")
 	var ping_command = {
-		"domain": "system",
-		"command": "ping",
-		"payload": { "sent_at": Time.get_unix_time_from_system() }
+		"type": "ping"
 	}
 	json_input.text = JSON.stringify(ping_command, "  ")
+
 
 ## --- ПРОВЕРКА КОНТРАКТА ---
 # Убеждаемся, что все узлы с нужными группами существуют в сцене.

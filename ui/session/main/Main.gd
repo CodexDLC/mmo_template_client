@@ -123,17 +123,43 @@ func _on_register_screen_request_back() -> void:
 
 func _on_http_login_completed(ok: bool, data_or_err) -> void:
 	var screen = _current_screen as Control
-	if not screen or not screen.is_in_group("g_login_button"):
+	# Убеждаемся, что мы все еще на экране входа
+	if not screen or screen.scene_file_path != _start_scene_path:
 		return
 
 	if ok:
-		Log.success("HTTP login successful! Now connecting to WebSocket...")
+		Log.info("HTTP login successful! Now connecting to WebSocket...")
 		screen.set_status(tr("Connecting..."))
 		NetWS.connect_to_server()
 	else:
 		Log.error("HTTP login failed: " + str(data_or_err))
-		screen.show_error(str(data_or_err))
+		
+		var error_message_text = "Login failed. Please try again."
+		
+		# --- УЛУЧШЕННОЕ ИСПРАВЛЕНИЕ: ПРОВЕРЯЕМ РЕЗУЛЬТАТ ПАРСИНГА ---
+		var parser = JSON.new()
+		var parse_result = parser.parse(str(data_or_err))
+		
+		if parse_result == OK:
+			var parsed_error = parser.get_data()
+			if parsed_error is Dictionary and parsed_error.has("detail"):
+				# Формат ошибки, который приходит с HTTP 401/403
+				error_message_text = str(parsed_error.detail)
+			elif parsed_error is Array and parsed_error.size() > 0:
+				# Формат ошибки валидации (HTTP 422)
+				var first_error = parsed_error[0]
+				if first_error is Dictionary and first_error.has("msg"):
+					error_message_text = str(first_error.msg)
+			else:
+				# Если не удалось найти понятное сообщение в JSON
+				error_message_text = "An unexpected error occurred."
+		else:
+			# Если парсинг JSON полностью провалился, используем исходный текст
+			error_message_text = str(data_or_err)
+		
+		screen.show_error(error_message_text)
 		screen.set_busy(false)
+		# --- КОНЕЦ ИСПРАВЛЕНИЯ ---
 
 func _on_http_register_completed(ok: bool, data_or_err) -> void:
 	var screen = _current_screen as Control

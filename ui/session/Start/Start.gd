@@ -23,8 +23,9 @@ signal request_open_debug
 @onready var login_button: Button
 @onready var register_button: Button
 @onready var debug_button: Button
-@onready var status_label: Label
+@onready var status_label: RichTextLabel 
 @onready var toggle_password_button: CheckBox
+
 
 # --- ВСТРОЕННЫЕ ФУНКЦИИ GODOT ---
 
@@ -63,8 +64,10 @@ func _input(event: InputEvent) -> void:
 
 # Устанавливает текст в статус-лейбле.
 func set_status(text: String) -> void:
-	if status_label: # Проверяем, существует ли узел, на всякий случай.
-		status_label.text = text
+	if status_label:
+		status_label.clear()
+		status_label.append_text(text)
+
 
 # Блокирует или разблокирует интерактивные элементы на время занятости (например, во время запроса).
 func set_busy(is_busy: bool) -> void:
@@ -78,25 +81,28 @@ func set_busy(is_busy: bool) -> void:
 # В будущем можно будет подключить более красивое окно ошибки.
 func show_error(text: String) -> void:
 	if status_label:
-		# BBCode позволяет форматировать текст в лейблах Godot.
-		status_label.text = "[color=red]" + text + "[/color]"
+		# У RichTextLabel эти теги добавлять в код не нужно,
+		# так как мы используем методы push_color/pop
+		status_label.clear()
+		status_label.push_color(Color.RED)
+		status_label.append_text(text)
+		status_label.pop()
 
 
 ## --- ВНУТРЕННИЕ ФУНКЦИИ (Обработчики сигналов кнопок) ---
 
 # Вызывается при нажатии на кнопку входа.
 func _on_login_button_pressed() -> void:
-	# Собираем данные из полей ввода. .strip_edges() убирает пробелы в начале и конце.
+	# ИСПРАВЛЕНИЕ: Убедитесь, что эта строка присутствует.
+	set_status("") # Сбрасываем статус перед новой попыткой.
+
 	var username := username_input.text.strip_edges()
 	var password := password_input.text
 
-	# Простая проверка, что поля не пустые.
 	if username.is_empty() or password.is_empty():
 		show_error("Username and password cannot be empty.")
 		return
 
-	# Если все в порядке, ИСПУСКАЕМ (emit) наш главный сигнал.
-	# Main.gd "услышит" его и начнет процесс логина.
 	request_login.emit(username, password)
 
 # Вызывается при нажатии на кнопку регистрации.

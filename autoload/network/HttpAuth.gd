@@ -28,18 +28,22 @@ func _ready() -> void:
 
 
 func login(credentials: Dictionary) -> void:
-	var url = Config.get_value("http_url") + "/auth/login"
+	var network_config = Config.get_value("network")
+	# ИСПРАВЛЕНИЕ: Используем int() перед str() для надежности
+	var url = "http://" + network_config.host + ":" + str(int(network_config.http_port)) + "/v1/auth/login"
 	var headers = ["Content-Type: application/json"]
 	var body = JSON.stringify(credentials)
 	
 	Log.info("Sending login request to " + url)
 	_last_request_type = "login"
 	_http_request.request(url, headers, HTTPClient.METHOD_POST, body)
-
+	
 
 # Новая функция для регистрации
 func register(credentials: Dictionary) -> void:
-	var url = Config.get_value("http_url") + "/auth/register"
+	var network_config = Config.get_value("network")
+	# ИСПРАВЛЕНИЕ: Используем int() перед str() для надежности
+	var url = "http://" + network_config.host + ":" + str(int(network_config.http_port)) + "/v1/auth/register"
 	var headers = ["Content-Type: application/json"]
 	var body = JSON.stringify(credentials)
 	
@@ -59,7 +63,9 @@ func refresh() -> void:
 		return
 
 	_is_refreshing = true
-	var url = Config.get_value("http_url") + "/auth/refresh"
+	var network_config = Config.get_value("network")
+	# ИСПРАВЛЕНИЕ: Используем int() перед str() для надежности
+	var url = "http://" + network_config.host + ":" + str(int(network_config.http_port)) + "/v1/auth/refresh"
 	var headers = ["Content-Type: application/json"]
 	var body = JSON.stringify({"refresh_token": Session.refresh_token})
 	
