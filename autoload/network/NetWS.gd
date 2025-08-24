@@ -48,7 +48,12 @@ func connect_to_server() -> void:
 		return
 	_current_state = State.CONNECTING
 	_attempt_connection()
-
+	
+func close_connection() -> void:
+	if _ws_peer.get_ready_state() != WebSocketPeer.STATE_CLOSED:
+		Log.info("Closing WebSocket connection by client request.")
+		_ws_peer.close()
+		
 func _attempt_connection() -> void:
 	if _current_state != State.CONNECTING:
 		return
@@ -111,7 +116,6 @@ func _process_message(msg_str: String) -> void:
 		Log.error("Failed to parse server message: " + msg_str)
 		return
 
-	# --- ИСПРАВЛЕНИЕ ЗДЕСЬ: Явное указание типов ---
 	var msg_type: String = data.get("type", "unknown")
 	var request_id: String = data.get("request_id", "")
 
@@ -121,7 +125,8 @@ func _process_message(msg_str: String) -> void:
 		Session.connection_id = data.get("connection_id")
 		_backoff.reset()
 		EventBus.net_authenticated.emit(Session.connection_id)
-		Log.success("WebSocket Authenticated! Connection ID: " + Session.connection_id)
+		# --- ИСПРАВЛЕНИЕ ЗДЕСЬ ---
+		Log.info("WebSocket Authenticated! Connection ID: " + Session.connection_id)
 		_resend_idempotent_queue()
 	
 	elif msg_type == "event":

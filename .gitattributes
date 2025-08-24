@@ -1,9 +1,5 @@
 # Normalize EOL for all files that Git considers text files.
-<<<<<<< HEAD
 
 
 * text=auto eol=lf
 *.bat eol=crlf
-=======
-* text=auto eol=lf
->>>>>>> 7ddda422c34192076b61a8851303349f6f305c7b

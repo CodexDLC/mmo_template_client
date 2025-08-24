@@ -1,4 +1,4 @@
-# res://ui/main/Main.gd
+# res://ui/session/main/Main.gd
 extends Control
 
 @onready var view_root: Control = $ViewRoot
@@ -72,6 +72,7 @@ func _change_screen(scene_path: String) -> void:
 	if scene_path == _start_scene_path:
 		_current_screen.request_login.connect(_on_start_screen_request_login)
 		_current_screen.request_open_register.connect(_on_start_screen_request_open_register)
+		_current_screen.request_open_debug.connect(_on_start_screen_request_open_debug)
 	
 	elif scene_path == _register_scene_path:
 		_current_screen.request_register.connect(_on_register_screen_request_register)
@@ -122,30 +123,25 @@ func _on_register_screen_request_back() -> void:
 
 func _on_http_login_completed(ok: bool, data_or_err) -> void:
 	var screen = _current_screen as Control
-	# Убеждаемся, что мы все еще на экране входа
-	if not screen or screen.scene_file_path != _start_scene_path:
+	if not screen or not screen.is_in_group("g_login_button"):
 		return
 
-	# Если аутентификация прошла успешно...
 	if ok:
-		# --- ИСПРАВЛЕНИЕ ЗДЕСЬ ---
-		Log.info("HTTP login successful! Now connecting to WebSocket...") 
+		Log.success("HTTP login successful! Now connecting to WebSocket...")
 		screen.set_status(tr("Connecting..."))
 		NetWS.connect_to_server()
 	else:
 		Log.error("HTTP login failed: " + str(data_or_err))
-		# Показываем ошибку и снова делаем интерфейс активным.
 		screen.show_error(str(data_or_err))
 		screen.set_busy(false)
 
 func _on_http_register_completed(ok: bool, data_or_err) -> void:
 	var screen = _current_screen as Control
-	if not screen or screen.scene_file_path != _register_scene_path:
+	if not screen or not screen.is_in_group("g_register_button"):
 		return
 	
 	if ok:
-		# --- И ИСПРАВЛЕНИЕ ЗДЕСЬ ---
-		Log.info("HTTP registration successful!") 
+		Log.success("HTTP registration successful!")
 		screen.set_status(tr("Success! You can now log in."))
 		screen.set_busy(false)
 	else:
@@ -160,7 +156,7 @@ func _on_net_authenticated(_connection_id: String) -> void:
 
 # Вызывается, когда EventBus сообщает о разрыве соединения.
 func _on_net_disconnected(reason: String) -> void:
-	Log.info("Main: Net disconnected. Reason: %s" % reason)
+	Log.warn("Main: Net disconnected. Reason: %s" % reason)
 	
 	# --- ИСПРАВЛЕННЫЙ КОД ---
 	# Используем свойство `scene_file_path`, которое хранит путь к файлу сцены ("res://...").
@@ -176,12 +172,22 @@ func _on_net_disconnected(reason: String) -> void:
 ## --- НОВЫЕ ОБРАБОТЧИКИ ОТ ЭКРАНА ЛОББИ ---
 
 func _on_lobby_screen_request_open_debug() -> void:
+	# TODO: реализовать переход в Playground
 	Log.info("Main: Request to open debug screen from Lobby.")
-	# --- ВОТ ЭТУ СТРОКУ Я ЗАБЫЛ ДОБАВИТЬ ---
-	_change_screen(_playground_scene_path)
 
 func _on_lobby_screen_request_logout() -> void:
 	Log.info("Main: Request to log out from Lobby.")
 	Session.clear() # Очищаем сессию (токены и т.д.)
-	NetWS.close_connection() # Используем нашу новую, правильную функцию
-	_change_screen(_start_scene_path)
+	NetWS.close() # Корректно закрываем WebSocket соединение
+	_change_screen(_start_scene_path) # Возвращаемся на экран входа
+	
+func _on_start_screen_request_open_debug() -> void:
+	Log.info("Main: Request to open debug screen from Start screen.")
+	# Проверяем, есть ли у нас вообще токен, чтобы было с чем работать
+	if Session.is_access_valid():
+		_change_screen(_playground_scene_path)
+	else:
+		# Уведомляем пользователя, что без входа это бессмысленно
+		var screen = _current_screen as Control
+		if screen and screen.has_method("show_error"):
+			screen.show_error(tr("You need to log in first."))

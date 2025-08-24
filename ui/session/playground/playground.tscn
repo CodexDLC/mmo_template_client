@@ -1,0 +1,76 @@
+[gd_scene load_steps=2 format=3 uid="uid://b34igfeusbnrh"]
+
+[ext_resource type="Script" uid="uid://ctxb1e3ovivpy" path="res://ui/session/playground/Playground.gd" id="1_frpgi"]
+
+[node name="Playground" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_frpgi")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+
+[node name="HBoxContainer_StatusBar" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer/HBoxContainer_StatusBar" groups=["g_status_label"]]
+layout_mode = 2
+text = "\"Status: N/A\""
+
+[node name="CountersLabel" type="Label" parent="VBoxContainer/HBoxContainer_StatusBar" groups=["g_counters_label"]]
+layout_mode = 2
+text = "\"In-flight: 0\""
+
+[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LeftPanel" type="VBoxContainer" parent="VBoxContainer/HSplitContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HSplitContainer/LeftPanel"]
+layout_mode = 2
+text = "\"Raw JSON Command:\""
+
+[node name="JsonInput" type="TextEdit" parent="VBoxContainer/HSplitContainer/LeftPanel" groups=["g_json_input"]]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer_Buttons1" type="HBoxContainer" parent="VBoxContainer/HSplitContainer/LeftPanel"]
+layout_mode = 2
+
+[node name="SendButton" type="Button" parent="VBoxContainer/HSplitContainer/LeftPanel/HBoxContainer_Buttons1" groups=["g_send_button"]]
+layout_mode = 2
+text = "Send (Ctrl+Enter)"
+
+[node name="ReconnectButton" type="Button" parent="VBoxContainer/HSplitContainer/LeftPanel/HBoxContainer_Buttons1" groups=["g_reconnect_button"]]
+layout_mode = 2
+text = "Reconnect"
+
+[node name="HBoxContainer_Buttons2" type="HBoxContainer" parent="VBoxContainer/HSplitContainer/LeftPanel"]
+layout_mode = 2
+
+[node name="ClearButton" type="Button" parent="VBoxContainer/HSplitContainer/LeftPanel/HBoxContainer_Buttons2" groups=["g_clear_button"]]
+layout_mode = 2
+text = "Clear Log"
+
+[node name="ExportButton" type="Button" parent="VBoxContainer/HSplitContainer/LeftPanel/HBoxContainer_Buttons2" groups=["g_export_logs_button"]]
+layout_mode = 2
+text = "Export Log"
+
+[node name="PresetsContainer" type="VBoxContainer" parent="VBoxContainer/HSplitContainer/LeftPanel" groups=["g_presets_container"]]
+layout_mode = 2
+
+[node name="Preset1Button" type="Button" parent="VBoxContainer/HSplitContainer/LeftPanel/PresetsContainer" groups=["Preset1Button"]]
+layout_mode = 2
+text = "Ping Command"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer/HSplitContainer" groups=["g_event_log"]]
+layout_mode = 2
+size_flags_horizontal = 3

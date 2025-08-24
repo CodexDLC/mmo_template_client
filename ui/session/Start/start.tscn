@@ -1,0 +1,63 @@
+[gd_scene load_steps=2 format=3 uid="uid://bg6sfrle35ue3"]
+
+[ext_resource type="Script" uid="uid://d3a0t1bnd1xw8" path="res://ui/session/Start/Start.gd" id="1_qdv6s"]
+
+[node name="Start" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_qdv6s")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+offset_left = 800.0
+offset_top = 450.0
+offset_right = 1130.0
+offset_bottom = 650.0
+alignment = 1
+
+[node name="UsernameInput" type="LineEdit" parent="VBoxContainer" groups=["g_username_input"]]
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "Login"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="PasswordInput" type="LineEdit" parent="VBoxContainer/HBoxContainer" groups=["g_password_input"]]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Password"
+secret = true
+
+[node name="CheckBox" type="CheckBox" parent="VBoxContainer/HBoxContainer" groups=["g_toggle_password_button"]]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer" groups=["g_status_label"]]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+text = "Вход..."
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LoginButton" type="Button" parent="VBoxContainer/VBoxContainer" groups=["g_login_button"]]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Войти"
+
+[node name="RegisterButton" type="Button" parent="VBoxContainer/VBoxContainer" groups=["g_register_button"]]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Регистрация"
+
+[node name="DebugButton" type="Button" parent="VBoxContainer/VBoxContainer" groups=["g_debug_button"]]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+text = "Playground"

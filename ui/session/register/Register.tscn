@@ -1,0 +1,48 @@
+[gd_scene load_steps=2 format=3 uid="uid://dgak3bjceoujw"]
+
+[ext_resource type="Script" uid="uid://dxv1dug1cxwyh" path="res://ui/session/register/Register.gd" id="1_l2tan"]
+
+[node name="Register" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_l2tan")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 400.0
+offset_top = 200.0
+offset_right = 730.0
+offset_bottom = 450.0
+
+[node name="EmailInput" type="LineEdit" parent="VBoxContainer" groups=["g_email_input"]]
+layout_mode = 2
+placeholder_text = "Email"
+
+[node name="UsernameInput" type="LineEdit" parent="VBoxContainer" groups=["g_username_input"]]
+layout_mode = 2
+placeholder_text = "Login"
+
+[node name="PasswordInput" type="LineEdit" parent="VBoxContainer" groups=["g_password_input"]]
+layout_mode = 2
+placeholder_text = "Password"
+secret = true
+
+[node name="PasswordConfirmInput" type="LineEdit" parent="VBoxContainer" groups=["g_password_confirm_input"]]
+layout_mode = 2
+placeholder_text = "Confirm passworld"
+secret = true
+
+[node name="RegisterButton" type="Button" parent="VBoxContainer" groups=["g_register_button"]]
+layout_mode = 2
+text = "Registration"
+
+[node name="BackButton" type="Button" parent="VBoxContainer" groups=["g_back_button"]]
+layout_mode = 2
+text = "Return"
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer" groups=["g_status_label"]]
+layout_mode = 2
